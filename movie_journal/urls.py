@@ -21,6 +21,6 @@ from ratings import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
-    path('list/', views.movie_list_view, name='movie_list'),
+    path('list/', views.movie_pages_view, name='movie_list'),
 
 ]
