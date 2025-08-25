@@ -8,15 +8,17 @@ def home(request):
     pass
 
 def movie_pages_view(request):
-    movies = MOVIE.objects.all().order_by()
-    sort_by = request.GET.get('sort', 'title')
+    movies = MOVIE.objects.all()
+    sort_by = request.GET.get('sort', '-ratings')
     
-    if sort_by == 'genre':
-        movies = movies.order_by('genre')
+    if sort_by == 'rating':
+        movies = movies.order_by('-ratings')
     elif sort_by == 'released_year':
         movies = movies.order_by('released_year')
-    else:
+    elif sort_by == "title":
         movies = movies.order_by('title')
+    else:
+        movies = movies.order_by("-ratings")
 
     paginator = Paginator(movies, 25)
     page_number = request.GET.get('page')
