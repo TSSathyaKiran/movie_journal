@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Movies</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --card-color: #1c1c1c;
+            --text-color: #f0f0f0;
+            --accent-main: #00f0ff;
+            --accent-glow: #00f0ff80;
+            --highlight-color: #ff0055;
+            --subtle-text: #888;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at top left, var(--bg-secondary) 1%, transparent 15%), 
+                                 radial-gradient(circle at bottom right, var(--bg-secondary) 1%, transparent 15%);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            padding: 60px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header h1 {
+            font-size: clamp(2.5em, 6vw, 5em);
+            color: var(--text-color);
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            position: relative;
+            display: inline-block;
+        }
+
+        .header h1::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, transparent, var(--accent-main), transparent);
+            border-radius: 5px;
+            animation: pulse-line 2s infinite ease-in-out;
+        }
+        
+        @keyframes pulse-line {
+            0% { width: 0; }
+            50% { width: 100%; }
+            100% { width: 0; }
+        }
+
+        /* --- Sort Button & Dropdown Styles --- */
+        .sort-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .sort-btn {
+            background-color: var(--card-color);
+            color: var(--text-color);
+            padding: 12px 25px;
+            border: 2px solid var(--accent-main);
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .sort-btn:hover {
+            background-color: var(--accent-main);
+            color: var(--bg-primary);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .sort-dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: var(--card-color);
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.6);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1;
+            right: 0;
+            margin-top: 10px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .sort-dropdown-content.show {
+            display: flex;
+            flex-direction: column;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .sort-dropdown-content a {
+            color: var(--text-color);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 0.9em;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .sort-dropdown-content a:hover {
+            background-color: var(--bg-secondary);
+            color: var(--accent-main);
+        }
+        /* --- End of Sort Styles --- */
+
+
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 30px;
+            padding: 20px 0;
+        }
+
+        .movie-card {
+            background-color: var(--card-color);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .movie-card:hover {
+            transform: scale(1.05) rotate(1deg);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 15px var(--accent-glow);
+            z-index: 10;
+        }
+        
+        .movie-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            transition: background 0.4s ease;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .movie-card:hover::before {
+            background: transparent;
+        }
+
+        .movie-card img {
+            width: 100%;
+            height: 380px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .movie-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .movie-card-content {
+            padding: 20px;
+            position: relative;
+            z-index: 3;
+        }
+
+        .movie-card h2 {
+            font-size: 1.3em;
+            margin: 0 0 8px;
+            color: var(--text-color);
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .movie-card p {
+            font-size: 0.9em;
+            color: var(--subtle-text);
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .movie-card p strong {
+            color: var(--highlight-color);
+        }
+
+        .no-movies-message {
+            text-align: center;
+            font-size: 1.5em;
+            color: var(--subtle-text);
+            margin: 80px 0;
+            font-weight: 300;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            padding: 50px 0;
+        }
+
+        .pagination-btn {
+            padding: 14px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 2px solid transparent;
+        }
+
+        .current-page {
+            background-color: var(--accent-main);
+            color: var(--bg-primary);
+            box-shadow: 0 6px 20px var(--accent-glow);
+            cursor: default;
+            border-color: var(--accent-main);
+            transform: scale(1.1);
+        }
+
+        .nav-btn {
+            background-color: var(--card-color);
+            color: var(--text-color);
+            border-color: var(--subtle-text);
+        }
+
+        .nav-btn:hover {
+            background-color: var(--highlight-color);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 0, 85, 0.4);
+            border-color: var(--highlight-color);
+        }
+        
+        .disabled {
+            background-color: #222;
+            color: #666;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+            pointer-events: none;
+            border-color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sort-container">
+    <button class="sort-btn" onclick="toggleDropdown()">Sort By</button>
+    <div id="sortDropdown" class="sort-dropdown-content">
+        <a href="?sort=title">Title</a>
+        <a href="?sort=released_year">Year</a>
+        <a href="?sort=rating">Rating</a>
+    </div>
+</div>
+
+<div class="container">
+    <header class="header">
+        <h1>Movie Library</h1>
+    </header>
+
+    <div class="movie-grid">
+        {% for movie in movies %}
+        <div class="movie-card">
+            {% if movie.poster %}
+                <img src="{{ movie.poster }}" alt="Poster for {{ movie.title }}">
+            {% else %}
+                <img src="https://via.placeholder.com/250x380.png?text=No+Poster" alt="No poster available">
+            {% endif %}
+            <div class="movie-card-content">
+                <h2>{{ movie.title }}</h2>
+                <p><strong>Genre:</strong> {{ movie.genre }}</p>
+                <p><strong>Year:</strong> {{ movie.released_year }}</p>
+                <p><strong>Rating:</strong> {{ movie.ratings }}</p>
+            </div>
+        </div>
+        {% empty %}
+        <div class="no-movies-message">
+            <p>No movies found. The reel is empty.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if movies.has_other_pages %}
+    <div class="pagination-container">
+        {% if movies.has_previous %}
+            <a href="?page={{ movies.previous_page_number }}" class="pagination-btn nav-btn">Previous</a>
+        {% else %}
+            <span class="pagination-btn disabled">Previous</span>
+        {% endif %}
+
+        <span class="pagination-btn current-page">{{ movies.number }}</span>
+        
+        {% if movies.has_next %}
+            <a href="?page={{ movies.next_page_number }}" class="pagination-btn nav-btn">Next</a>
+        {% else %}
+            <span class="pagination-btn disabled">Next</span>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</div>
+
+<script>
+    function toggleDropdown() {
+        document.getElementById("sortDropdown").classList.toggle("show");
+    }
+
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function(event) {
+        if (!event.target.matches('.sort-btn')) {
+            const dropdowns = document.getElementsByClassName("sort-dropdown-content");
+            for (let i = 0; i < dropdowns.length; i++) {
+                const openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
