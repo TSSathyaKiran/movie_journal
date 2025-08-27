@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 class MOVIE(models.Model):
+    movie_id = models.IntegerField(unique=True)
     poster = models.URLField(null=True, blank=True)
     title = models.CharField(max_length=200)
     genre = models.CharField(max_length=20)
