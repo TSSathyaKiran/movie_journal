@@ -1,2 +1,12 @@
-.vscode/
-venv/
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Django migrations
+*/migrations/
+
+# Database file
+*.sqlite3
+
+# Excel/CSV files (if you want to ignore them too)
+*.csv
