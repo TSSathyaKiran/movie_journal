@@ -29,3 +29,6 @@ env/
 # These can be generated during testing or by certain tools.
 build/
 dist/
+
+# macOS system files
+.DS_Store
