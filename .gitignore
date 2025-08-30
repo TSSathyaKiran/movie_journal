@@ -3,10 +3,29 @@ __pycache__/
 *.py[cod]
 
 # Django migrations
+# These are temporary and can be regenerated with 'makemigrations'.
 */migrations/
 
-# Database file
+# Database files (Django usually uses SQLite3 for local development)
 *.sqlite3
 
-# Excel/CSV files (if you want to ignore them too)
-*.csv
+# Environment files
+# Don't commit local environment variables, credentials, or API keys.
+.env
+.DS_Store # macOS specific cache file
+
+# Python virtual environment directories
+venv/
+env/
+
+# IDE and editor files
+.idea/
+.vscode/
+
+# Jupyter Notebook files (if you use them)
+.ipynb_checkpoints/
+
+# Other temporary or build files
+# These can be generated during testing or by certain tools.
+build/
+dist/
